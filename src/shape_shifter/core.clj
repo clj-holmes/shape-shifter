@@ -5,12 +5,15 @@
             [parcera.core :as parcera]
             [shape-shifter.utils :as utils]))
 
-(def ^:private wildcards
-  {"$fn"      `(s/cat :function #(= 'fn %)
+(def ^:dynamic *wildcards*
+  {"$"        `any?
+   "$&"       `(s/* any?)
+   "$fn"      `(s/cat :function #(= 'fn %)
                       :args (s/coll-of symbol? :kind vector?)
                       :body any?)
    "$symbol"  `symbol?
    "$string"  `string?
+   "$set"     `set?
    "$char"    `char?
    "$keyword" `keyword?
    "$map"     `map?
@@ -47,7 +50,7 @@
   `#{(edn/read-string ~value)})
 
 (defmethod ^:private transform :symbol [[_ value]]
-  (or (get wildcards value)
+  (or (get *wildcards* value)
       `#{(symbol ~value)}))
 
 (defmethod ^:private transform :string [[_ value]]
@@ -58,13 +61,12 @@
 
 (defmethod ^:private transform :whitespace [[_ _]] nil)
 
-(defn pattern->spec [pattern]
-  (-> pattern
-      (parcera/ast :unhide :literals)
-      rest
-      first
-      transform
-      eval))
+(defn pattern->spec
+  [pattern]
+  (let [ast (parcera/ast pattern :unhide :literals)]
+    (-> ast rest first transform eval)))
 
 (comment
-  (-> "(+ 1 1)" pattern->spec (s/valid? '(+ 1 1))))
+  (-> "$&"
+      pattern->spec
+      (s/valid? '(+ 1 (- 1 1)))))
