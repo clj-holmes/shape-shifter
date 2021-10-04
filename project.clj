@@ -9,6 +9,11 @@
             [lein-cljfmt "0.6.4"]
             [lein-nsorg "0.3.0"]
             [jonase/eastwood "0.3.10"]]
+            
+  :deploy-repositories [["clojars" {:url "https://clojars.org/repo"
+                                    :username :env/clojars_user
+                                    :password :env/clojars_pass
+                                    :sign-releases false}]]
 
   :source-paths ["src"]
 
