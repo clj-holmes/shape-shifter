@@ -1,4 +1,6 @@
 # shape-shifter
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.clj-holmes/shape-shifter.svg)](https://clojars.org/org.clojars.clj-holmes/shape-shifter)
+
 Transforms a string pattern into clojure spec.
 
 # Patterns
