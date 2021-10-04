@@ -1,7 +1,7 @@
 (ns shape-shifter.core-test
-  (:require [clojure.test :refer :all]
-            [shape-shifter.core :as core]
-            [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.test :refer :all]
+            [shape-shifter.core :as core]))
 
 (deftest pattern->spec
   (testing "when it is a simple type match"
