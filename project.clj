@@ -1,4 +1,4 @@
-(defproject shape-shifter "0.1.0-SNAPSHOT"
+(defproject shape-shifter "0.1.1"
   :url "https://github.com/clj-holmes/shape-shifter"
   :scm {:name "git"
         :url  "https://github.com/clj-holmes/clj-holmes"}
