@@ -20,6 +20,10 @@
     (let [spec (core/pattern->spec "(+ 1 ($symbol 10 $number))")]
       (is (s/valid? spec '(+ 1 (- 10 1))))))
 
+  (testing "when the pattern has a vector with any kind and amount of data followed by a string"
+    (let [spec (core/pattern->spec "[$& $string]")]
+      (is (s/valid? spec [1 2 3 4 "72"]))))
+
   (testing "when the pattern has nested vectors"
     (let [spec (core/pattern->spec "[[[1]]]")]
       (is (s/valid? spec [[[1]]]))))
