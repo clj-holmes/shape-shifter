@@ -56,7 +56,6 @@
   (pattern->collection values `set?))
 
 (defmethod ^:private transform :map [[_ & _]]
-  :not-implemented
   nil)
 
 (defmethod ^:private transform :symbol [[_ value]]
