@@ -1,4 +1,4 @@
-(defproject org.clojars.clj-holmes/shape-shifter "0.1.1"
+(defproject org.clojars.clj-holmes/shape-shifter "0.1.2"
   :url "https://github.com/clj-holmes/shape-shifter"
   :description "Transforms a string pattern into clojure spec."
   :scm {:name "git"

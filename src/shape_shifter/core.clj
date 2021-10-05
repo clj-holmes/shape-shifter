@@ -6,21 +6,27 @@
             [shape-shifter.utils :as utils]))
 
 (def ^:dynamic *wildcards*
-  {"$"        `any?
-   "$&"       `(s/* any?)
-   "$fn"      `(s/cat :function #(= 'fn %)
-                      :args (s/coll-of symbol? :kind vector?)
-                      :body any?)
-   "$symbol"  `symbol?
-   "$string"  `string?
-   "$set"     `set?
-   "$char"    `char?
-   "$keyword" `keyword?
-   "$map"     `map?
-   "$number"  `number?
-   "$list"    `list?
-   "$vector"  `vector?
-   "$regex"   `s/regex?})
+  {"$"              `any?
+   "$fn"            `(s/cat :function #(= 'fn %)
+                            :args (s/coll-of symbol? :kind vector?)
+                            :body any?)
+   "$macro-keyword" `qualified-keyword?
+   "$symbol"        `symbol?
+   "$string"        `string?
+   "$set"           `set?
+   "$char"          `char?
+   "$keyword"       `keyword?
+   "$map"           `map?
+   "$number"        `number?
+   "$list"          `list?
+   "$vector"        `vector?
+   "$regex"         `s/regex?})
+
+(defn ^:private any-number-of-wildcard [symbol]
+  (if-let [wildcard (some-> #"\$\w*&"
+                            (re-matches symbol)
+                            (string/replace "&" ""))]
+    `(s/* ~(get *wildcards* wildcard))))
 
 (defmulti ^:private transform (fn [[key _]]  key))
 
@@ -46,15 +52,26 @@
 (defmethod ^:private transform :vector [[_ & values]]
   (pattern->collection values `vector?))
 
+(defmethod ^:private transform :set [[_ & values]]
+  (pattern->collection values `set?))
+
+(defmethod ^:private transform :map [[_ & _]]
+  :not-implemented
+  nil)
+
+(defmethod ^:private transform :symbol [[_ value]]
+  (or (any-number-of-wildcard value)
+      (get *wildcards* value)
+      `#{(symbol ~value)}))
+
 (defmethod ^:private transform :number [[_ value]]
   `#{(edn/read-string ~value)})
 
-(defmethod ^:private transform :symbol [[_ value]]
-  (or (get *wildcards* value)
-      `#{(symbol ~value)}))
-
 (defmethod ^:private transform :string [[_ value]]
   `#{~(string/replace value #"\"" "")})
+
+(defmethod ^:private transform :keyword [[_ value]]
+  `#{~(keyword (string/replace value ":" ""))})
 
 (defmethod ^:private transform :regex [[_ value]]
   `#{~(format "#%s" value)})
@@ -67,7 +84,6 @@
     (-> ast rest first transform eval)))
 
 (comment
-  (-> "$&"
+  (-> "[$keyword& $string&]"
       pattern->spec
-      (s/valid? '(+ 1 (- 1 1)))))
-
+      (s/valid? [:jose :maria "banana" "uva"])))
