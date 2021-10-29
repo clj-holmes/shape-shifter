@@ -47,9 +47,9 @@
        (cons `s/spec)))
 
 (defn ^:private ->boolean [value]
-  (when (or (= "true" value)
-            (= "false" value))
-    #{(boolean value)}))
+  (cond
+    (= "true" value) `true?
+    (= "false" value) `false?))
 
 (defmethod ^:private transform :list [[_ & values]]
   (pattern->collection values `list?))
