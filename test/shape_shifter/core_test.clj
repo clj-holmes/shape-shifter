@@ -12,6 +12,10 @@
     (let [spec (core/pattern->spec "(+ 1 1)")]
       (is (s/valid? spec '(+ 1 1)))))
 
+  (testing "when the pattern has a boolean"
+    (let [spec (core/pattern->spec "[[[true]]]")]
+      (is (s/valid? spec [[[true]]]))))
+
   (testing "when the patterns has a wildcard"
     (let [spec (core/pattern->spec "$number")]
       (is (s/valid? spec 1))))

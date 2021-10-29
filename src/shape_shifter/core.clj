@@ -46,6 +46,11 @@
        list
        (cons `s/spec)))
 
+(defn ^:private ->boolean [value]
+  (when (or (= "true" value)
+            (= "false" value))
+    #{(boolean value)}))
+
 (defmethod ^:private transform :list [[_ & values]]
   (pattern->collection values `list?))
 
@@ -60,6 +65,7 @@
 
 (defmethod ^:private transform :symbol [[_ value]]
   (or (any-number-of-wildcard value)
+      (->boolean value)
       (get *wildcards* value)
       `#{(symbol ~value)}))
 
