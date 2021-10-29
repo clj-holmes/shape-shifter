@@ -12,6 +12,12 @@
     (let [spec (core/pattern->spec "(+ 1 1)")]
       (is (s/valid? spec '(+ 1 1)))))
 
+  (testing "when the pattern is a regex"
+    (let [spec (binding [core/*config* (merge core/*config* {:interpret-regex? true})]
+                 (core/pattern->spec "(#\"sh|bash\" $)"))]
+      (def spec spec)
+      (is (s/valid? spec '(sh 1)))))
+
   (testing "when the pattern has a boolean"
     (let [spec (core/pattern->spec "[[[true]]]")]
       (is (s/valid? spec [[[true]]]))))

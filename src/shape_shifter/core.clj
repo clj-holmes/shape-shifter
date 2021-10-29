@@ -5,6 +5,8 @@
             [parcera.core :as parcera]
             [shape-shifter.utils :as utils]))
 
+(def ^:dynamic *config* {:interpret-regex? false})
+
 (def ^:dynamic *wildcards*
   {"$"              `any?
    "$fn"            `(s/cat :function #(= 'fn %)
@@ -21,12 +23,6 @@
    "$list"          `list?
    "$vector"        `vector?
    "$regex"         `s/regex?})
-
-(defn ^:private any-number-of-wildcard [symbol]
-  (if-let [wildcard (some-> #"\$\w*&"
-                            (re-matches symbol)
-                            (string/replace "&" ""))]
-    `(s/* ~(get *wildcards* wildcard))))
 
 (defmulti ^:private transform (fn [[key _]]  key))
 
@@ -45,6 +41,12 @@
        (concat `(s/and ~kind))
        list
        (cons `s/spec)))
+
+(defn ^:private any-number-of-wildcard [symbol]
+  (if-let [wildcard (some-> #"\$\w*&"
+                            (re-matches symbol)
+                            (string/replace "&" ""))]
+    `(s/* ~(get *wildcards* wildcard))))
 
 (defn ^:private ->boolean [value]
   (cond
@@ -79,7 +81,17 @@
   `#{~(keyword (string/replace value ":" ""))})
 
 (defmethod ^:private transform :regex [[_ value]]
-  `#{~(format "#%s" value)})
+  (prn value)
+  (if (:interpret-regex? *config*)
+    (let [regex (-> value
+                    (subs 1)
+                    (string/reverse)
+                    (subs 1)
+                    (string/reverse)
+                    re-pattern)]
+      `(fn [x#]
+         (->> x# str (re-matches ~regex) nil? not)))
+    `#{~(format "#%s" value)}))
 
 (defmethod ^:private transform :whitespace [[_ _]] nil)
 
