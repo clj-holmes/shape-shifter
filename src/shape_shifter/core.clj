@@ -62,9 +62,6 @@
 (defmethod ^:private transform :set [[_ & values]]
   (pattern->collection values `set?))
 
-(defmethod ^:private transform :map [[_ & _]]
-  nil)
-
 (defmethod ^:private transform :symbol [[_ value]]
   (or (any-number-of-wildcard value)
       (->boolean value)
@@ -92,6 +89,21 @@
       `(fn [x#]
          (->> x# str (re-matches ~regex) nil? not)))
     `#{~(format "#%s" value)}))
+
+(defn build-hash-map-fn [[key value]]
+  (let [function-name (->> key first name (format "check-key-%s-value") symbol)]
+    `(fn ~function-name [x#]
+       (s/valid? ~value (get-in x# ~key)))))
+
+(defmethod ^:private transform :map [[_ & values]]
+  (->> values
+       (filter (comp #(not= :whitespace %) first))
+       (map transform)
+       (partition 2)
+       (map build-hash-map-fn)
+       (cons `s/and)
+       list
+       (cons `s/spec)))
 
 (defmethod ^:private transform :whitespace [[_ _]] nil)
 

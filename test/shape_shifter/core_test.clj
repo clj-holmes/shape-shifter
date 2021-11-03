@@ -26,6 +26,10 @@
     (let [spec (core/pattern->spec "$number")]
       (is (s/valid? spec 1))))
 
+  (testing "when the patterns has a hash-map"
+    (let [spec (core/pattern->spec "{:schema [1 2 3 $string] :require true}")]
+      (is (s/valid? spec {:schema [1 2 3 "banana"] :require true}))))
+
   (testing "when the pattern has nested lists"
     (let [spec (core/pattern->spec "(+ 1 ($symbol 10 $number))")]
       (is (s/valid? spec '(+ 1 (- 10 1))))))
