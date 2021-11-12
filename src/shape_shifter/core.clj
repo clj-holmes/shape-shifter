@@ -1,9 +1,30 @@
 (ns shape-shifter.core
+  (:gen-class)
   (:require [clojure.edn :as edn]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [parcera.core :as parcera]
+            [sci.core :as sci]
+            [sci.impl.vars :as vars]
             [shape-shifter.utils :as utils]))
+
+(def sns (vars/->SciNamespace 'clojure.spec.alpha nil))
+
+(def spec-namespace
+  {'def (sci/copy-var s/def sns)
+   'valid? (sci/copy-var s/valid? sns)
+   'gen (sci/copy-var s/gen sns)
+   'cat (sci/copy-var s/cat sns)
+   'cat-impl (sci/copy-var s/cat-impl sns)
+   'and (sci/copy-var s/and sns)
+   'and-spec-impl (sci/copy-var s/and-spec-impl sns)
+   '* (sci/copy-var s/* sns)
+   'rep-impl (sci/copy-var s/rep-impl sns)
+   'or (sci/copy-var s/or sns)
+   'coll-of (sci/copy-var s/coll-of sns)
+   'regex? (sci/copy-var s/regex? sns)
+   'spec (sci/copy-var s/spec sns)
+   'spec-impl (sci/copy-var s/spec-impl sns)})
 
 (def ^:dynamic *config* {:interpret-regex? false})
 
@@ -78,7 +99,6 @@
   `#{~(keyword (string/replace value ":" ""))})
 
 (defmethod ^:private transform :regex [[_ value]]
-  (prn value)
   (if (:interpret-regex? *config*)
     (let [regex (-> value
                     (subs 1)
@@ -110,7 +130,7 @@
 (defn pattern->spec
   [pattern]
   (let [ast (parcera/ast pattern :unhide :literals)]
-    (-> ast rest first transform eval)))
+    (-> ast rest first transform str (sci/eval-string {:namespaces {'clojure.spec.alpha spec-namespace}}))))
 
 (comment
   (-> "[$keyword& $string&]"
