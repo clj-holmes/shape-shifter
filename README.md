@@ -5,6 +5,7 @@ Transforms a string pattern into clojure spec.
 
 # Patterns
 Inspired by [grape](https://github.com/bfontaine/grape/blob/master/doc/Patterns.md) pattern system.
+
 Inspired by [grasp](https://github.com/borkdude/grasp/) spec utilization.
 
 ## Wildcards
