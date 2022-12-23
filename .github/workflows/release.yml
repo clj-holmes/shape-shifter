@@ -1,0 +1,14 @@
+name: release shape-shifter
+on: push
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: avakar/tag-and-release@v1
+        with:
+          tag_name: |
+            echo "$(cat VERSION_BETA.md)-beta"
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
