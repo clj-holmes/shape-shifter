@@ -20,7 +20,7 @@ jobs:
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@10.1
         with:
-          cli: 1.11.1
+          cli: 'latest'
 
       - name: Run lint
         run: clojure -M:clojure-lsp format --dry
