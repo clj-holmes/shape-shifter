@@ -21,5 +21,3 @@
    "$list"          `list?
    "$vector"        `vector?
    "$regex"         `s/regex?})
-
-

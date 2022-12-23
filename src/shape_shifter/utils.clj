@@ -27,4 +27,3 @@
        (apply str)
        string/lower-case
        keyword))
-
