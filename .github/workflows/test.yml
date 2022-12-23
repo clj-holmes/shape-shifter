@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Run lint
-      run: clj -M:clojure-lsp format --dry
+      run: clojure -M:clojure-lsp format --dry
 
     - name: Run tests
-      run: clj -M:test
+      run: clojure -M:test
