@@ -1,4 +1,4 @@
-name: Clojure CI
+name: Clojure tests
 
 on: push
 
@@ -9,9 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: lein deps
+
     - name: Run lint
-      run: lein lint
+      run: clj -M:clojure-lsp format --dry
+
     - name: Run tests
-      run: lein test
+      run: clj -M:test

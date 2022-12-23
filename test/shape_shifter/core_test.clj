@@ -1,7 +1,9 @@
 (ns shape-shifter.core-test
-  (:require [clojure.spec.alpha :as s]
-            [clojure.test :refer :all]
-            [shape-shifter.core :as core]))
+  (:require
+   [clojure.spec.alpha :as s]
+   [clojure.test :refer :all]
+   [shape-shifter.config :as config]
+   [shape-shifter.core :as core]))
 
 (deftest pattern->spec
   (testing "when it is a simple type match"
@@ -13,9 +15,8 @@
       (is (s/valid? spec '(+ 1 1)))))
 
   (testing "when the pattern is a regex"
-    (let [spec (binding [core/*config* (merge core/*config* {:interpret-regex? true})]
+    (let [spec (binding [config/*config* (merge config/*config* {:interpret-regex? true})]
                  (core/pattern->spec "(#\"sh|bash\" $)"))]
-      (def spec spec)
       (is (s/valid? spec '(sh 1)))))
 
   (testing "when the pattern has a boolean"
@@ -43,6 +44,6 @@
       (is (s/valid? spec [[[1]]]))))
 
   (testing "when there is a custom wildcard"
-    (let [spec (binding [core/*wildcards* (merge core/*wildcards* {"$banana" #{"banana"}})]
+    (let [spec (binding [config/*wildcards* (merge config/*wildcards* {"$banana" #{"banana"}})]
                  (core/pattern->spec "$banana"))]
       (is (s/valid? spec "banana")))))
