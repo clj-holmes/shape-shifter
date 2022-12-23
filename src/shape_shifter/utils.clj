@@ -13,7 +13,6 @@
                      (format "check-key-%s-value")
                      symbol)]
     `(fn ~fn-name [x#]
-       (println x#)
        (s/valid? ~value (get-in x# ~key)))))
 
 (defn apply-on-macro [macro values]

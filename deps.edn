@@ -2,7 +2,6 @@
         org.babashka/sci {:mvn/version "0.5.36"}
         carocad/parcera {:mvn/version "0.11.6"}
         clj-antlr/clj-antlr {:mvn/version "0.2.12"}
-
         ;org.antlr/antlr4-runtime {:mvn/version "4.11.1"}
         }
 
