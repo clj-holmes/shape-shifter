@@ -1,4 +1,4 @@
-name: Clojure CI
+name: Clojure tests
 
 on: push
 
@@ -8,10 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: lein deps
-    - name: Run lint
-      run: lein lint
-    - name: Run tests
-      run: lein test
+
+      - uses: actions/checkout@v2
+
+      - name: Prepare java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@10.1
+        with:
+          cli: 'latest'
+
+      - name: Run lint
+        run: clojure -M:clojure-lsp format --dry
+  
+      - name: Run tests
+        run: clojure -M:test

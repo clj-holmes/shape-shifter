@@ -1,0 +1,20 @@
+name: release shape-shifter
+
+on: push
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'get version'
+        run: | 
+            echo "APP_VERSION=$(cat VERSION.md)-beta" >> $GITHUB_ENV
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ env.APP_VERSION }}
+          prerelease: true
+          title: "Development Build"
