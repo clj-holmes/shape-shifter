@@ -68,9 +68,9 @@
                     (filter (comp #(not= :whitespace %) first))
                     (map transform)
                     (partition 2)
-                    (map utils/build-hashmap-function)
-                    first)]
-    `(-> ~result s/and s/spec)))
+                    (map utils/build-hashmap-function))
+        and-spec (utils/apply-on-macro `s/and result)]
+    `(s/spec ~and-spec)))
 
 
 (defn ->spec [pattern]
@@ -78,6 +78,3 @@
                         (parcera/ast :unhide :literals)
                         (nth 1))]
     (-> parsed-code transform str sci/eval-string)))
-
-
-(s/valid? (->spec "{:banana 10}") {:banana 10})
