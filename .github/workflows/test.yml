@@ -5,13 +5,40 @@ on: push
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu ]
+        java-version: [ '21' ]
+
+    runs-on: ${{ matrix.os }}-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
+    - uses: actions/checkout@v4
+
+    - name: Clojure deps cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.m2/repository
+        key: ${{ runner.os }}-cljdeps-${{ hashFiles('project.clj') }}
+        restore-keys: ${{ runner.os }}-cljdeps-
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java-version }}
+
+    - name: Install Leiningen
+      uses: DeLaGuardo/setup-clojure@ada62bb3282a01a296659d48378b812b8e097360
+      with:
+        lein: 'latest'
+
+    - name: Download dependencies
       run: lein deps
+
     - name: Run lint
       run: lein lint
+
     - name: Run tests
       run: lein test
